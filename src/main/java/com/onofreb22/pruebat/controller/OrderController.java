@@ -7,6 +7,8 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -45,7 +47,27 @@ public class OrderController {
         } catch (RuntimeException e) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
-    } 
+    }
+
+    @GetMapping("/prueba/{id}")
+    public ResponseEntity<Map<String, Object>> getOrder(@PathVariable Integer id) {
+        try {
+            // Obtener la orden
+            Order order = orderService.getOrderById(id);
+            
+            // Obtener los OrderItems de esa orden
+            List<OrderItem> orderItems = orderService.getOrderItems(id);
+            
+            // Crear response con Order y sus items
+            Map<String, Object> response = new HashMap<>();
+            response.put("order", order);
+            response.put("items", orderItems);
+            
+            return new ResponseEntity<>(response, HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+    }
     
     @SuppressWarnings("unchecked")
     private List<Map<String, Object>> extractItems(Map<String, Object> request) {

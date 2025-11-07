@@ -22,7 +22,7 @@ public class Order {
     @Column(name = "id_order")
     private int id;
     
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_client")
     private Client client;
     

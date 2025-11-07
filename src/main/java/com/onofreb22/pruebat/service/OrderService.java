@@ -65,6 +65,12 @@ public class OrderService {
     }
 
     @Transactional(readOnly = true)
+    public Order getOrderById(Integer orderId) {
+        return orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found with id: " + orderId));
+    }
+
+    @Transactional(readOnly = true)
     public List<OrderItem> getOrderItems(Integer orderId) {
         // Verificar que la orden existe
         Order order = orderRepository.findById(orderId)
