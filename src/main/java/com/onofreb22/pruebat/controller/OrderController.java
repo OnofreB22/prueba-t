@@ -18,6 +18,13 @@ import com.onofreb22.pruebat.entity.Order;
 import com.onofreb22.pruebat.entity.OrderItem;
 import com.onofreb22.pruebat.service.OrderService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/orders")
 public class OrderController {
@@ -26,7 +33,79 @@ public class OrderController {
     private OrderService orderService;
     
     @PostMapping
-    public ResponseEntity<Map<String, Object>> createOrder(@RequestBody Map<String, Object> request) {
+    @Operation(
+        summary = "Crear orden",
+        description = "Crea una nueva orden con cliente e items"
+    )
+    @ApiResponse(
+        responseCode = "201",
+        description = "Orden creada exitosamente",
+        content = @Content(
+            mediaType = "application/json",
+            schema = @Schema(implementation = Order.class),
+            examples = @ExampleObject(
+                name = "Respuesta exitosa",
+                value = """
+                    {
+                        "items": [
+                            {
+                                "id": 18,
+                                "item": {
+                                    "id": 0,
+                                    "name": "Plancha"
+                                },
+                                "quantity": 2
+                            },
+                            {
+                                "id": 19,
+                                "item": {
+                                    "id": 1,
+                                    "name": "Nevera"
+                                },
+                                "quantity": 5
+                            }
+                        ],
+                        "order": {
+                            "id": 15,
+                            "client": {
+                                "id": 0,
+                                "fullName": "Onofre Benjumea"
+                            },
+                            "createdAt": "2025-11-07T14:27:08.763422629"
+                        }
+                    } 
+                """
+            )
+        )
+    )
+    public ResponseEntity<Map<String, Object>> createOrder(
+        @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            description = "Datos de la orden a crear",
+            required = true,
+            content = @Content(
+                mediaType = "application/json",
+                examples = @ExampleObject(
+                    name = "Ejemplo de request",
+                    value = """
+                        {
+                            "clientId": 1,
+                            "items": [
+                                {
+                                    "itemId": 0,
+                                    "quantity": 2
+                                },
+                                {
+                                    "itemId": 1,
+                                    "quantity": 5
+                                }
+                            ]
+                        }
+                    """
+                )
+            )
+        )
+        @Valid
+        @RequestBody Map<String, Object> request) {
         try {
             // Extraer datos del request
             Integer clientId = Integer.valueOf(request.get("clientId").toString());
@@ -49,7 +128,52 @@ public class OrderController {
         }
     }
 
-    @GetMapping("/prueba/{id}")
+    @GetMapping("/{id}")
+    @Operation(
+        summary = "Obtener orden",
+        description = "Recupera una orden por su ID con todos sus items"
+    )
+    @ApiResponse(
+        responseCode = "200",
+        description = "Orden encontrada",
+        content = @Content(
+            mediaType = "application/json",
+            schema = @Schema(implementation = Order.class),
+            examples = @ExampleObject(
+                name = "Respuesta exitosa",
+                value = """
+                    {
+                        "items": [
+                            {
+                                "id": 18,
+                                "item": {
+                                    "id": 0,
+                                    "name": "Plancha"
+                                },
+                                "quantity": 2
+                            },
+                            {
+                                "id": 19,
+                                "item": {
+                                    "id": 1,
+                                    "name": "Nevera"
+                                },
+                                "quantity": 5
+                            }
+                        ],
+                        "order": {
+                            "id": 15,
+                            "client": {
+                                "id": 0,
+                                "fullName": "Onofre Benjumea"
+                            },
+                            "createdAt": "2025-11-07T14:27:08.763422629"
+                        }
+                    } 
+                """
+            )
+        )
+    )
     public ResponseEntity<Map<String, Object>> getOrder(@PathVariable Integer id) {
         try {
             // Obtener la orden
